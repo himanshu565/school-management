@@ -1,63 +1,56 @@
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/teachers";
 import { useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { ManagementNav } from "../components/management-nav";
 
-type Student = {
+type Teacher = {
   id: number;
   name: string;
-  age: number;
-  class_id: number | null;
-  section_id: number | null;
+  subject: string;
 };
 
-type StudentForm = {
+type TeacherForm = {
   name: string;
-  age: string;
-  class_id: string;
-  section_id: string;
+  subject: string;
 };
 
-const emptyForm: StudentForm = {
+const emptyForm: TeacherForm = {
   name: "",
-  age: "",
-  class_id: "",
-  section_id: "",
+  subject: "",
 };
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Student Dashboard" },
-    { name: "description", content: "Manage student records" },
+    { title: "Teacher Dashboard" },
+    { name: "description", content: "Manage teacher records" },
   ];
 }
 
-export default function Home() {
+export default function TeachersPage() {
   const apiBaseUrl = useMemo(
     () => import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000",
     [],
   );
 
-  const [students, setStudents] = useState<Student[]>([]);
-  const [form, setForm] = useState<StudentForm>(emptyForm);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [form, setForm] = useState<TeacherForm>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStudents = async () => {
+  const fetchTeachers = async () => {
     try {
       setError(null);
       setLoading(true);
 
-      const response = await fetch(`${apiBaseUrl}/students`);
-
+      const response = await fetch(`${apiBaseUrl}/teachers`);
       if (!response.ok) {
-        throw new Error("Could not load students");
+        throw new Error("Could not load teachers");
       }
 
-      const data = (await response.json()) as Student[];
-      setStudents(data);
+      const data = (await response.json()) as Teacher[];
+      setTeachers(data);
     } catch (fetchError) {
       const message =
         fetchError instanceof Error ? fetchError.message : "Unknown error";
@@ -68,7 +61,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    void fetchStudents();
+    void fetchTeachers();
   }, []);
 
   const resetForm = () => {
@@ -81,19 +74,11 @@ export default function Home() {
     setForm((previous) => ({ ...previous, [name]: value }));
   };
 
-  const toNumberOrNull = (value: string): number | null => {
-    if (value.trim() === "") {
-      return null;
-    }
-
-    return Number(value);
-  };
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!form.name.trim() || !form.age.trim()) {
-      setError("Name and age are required.");
+    if (!form.name.trim() || !form.subject.trim()) {
+      setError("Name and subject are required.");
       return;
     }
 
@@ -103,15 +88,13 @@ export default function Home() {
 
       const payload = {
         name: form.name.trim(),
-        age: Number(form.age),
-        class_id: toNumberOrNull(form.class_id),
-        section_id: toNumberOrNull(form.section_id),
+        subject: form.subject.trim(),
       };
 
       const endpoint =
         editingId === null
-          ? `${apiBaseUrl}/students`
-          : `${apiBaseUrl}/students/${editingId}`;
+          ? `${apiBaseUrl}/teachers`
+          : `${apiBaseUrl}/teachers/${editingId}`;
 
       const method = editingId === null ? "POST" : "PUT";
 
@@ -124,11 +107,11 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error("Could not save student");
+        throw new Error("Could not save teacher");
       }
 
       resetForm();
-      await fetchStudents();
+      await fetchTeachers();
     } catch (submitError) {
       const message =
         submitError instanceof Error ? submitError.message : "Unknown error";
@@ -138,14 +121,11 @@ export default function Home() {
     }
   };
 
-  const handleEdit = (student: Student) => {
-    setEditingId(student.id);
+  const handleEdit = (teacher: Teacher) => {
+    setEditingId(teacher.id);
     setForm({
-      name: student.name,
-      age: String(student.age),
-      class_id: student.class_id === null ? "" : String(student.class_id),
-      section_id:
-        student.section_id === null ? "" : String(student.section_id),
+      name: teacher.name,
+      subject: teacher.subject,
     });
   };
 
@@ -153,19 +133,19 @@ export default function Home() {
     try {
       setError(null);
 
-      const response = await fetch(`${apiBaseUrl}/students/${id}`, {
+      const response = await fetch(`${apiBaseUrl}/teachers/${id}`, {
         method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error("Could not delete student");
+        throw new Error("Could not delete teacher");
       }
 
       if (editingId === id) {
         resetForm();
       }
 
-      await fetchStudents();
+      await fetchTeachers();
     } catch (deleteError) {
       const message =
         deleteError instanceof Error ? deleteError.message : "Unknown error";
@@ -178,8 +158,8 @@ export default function Home() {
       <section className="sms-shell">
         <header className="sms-header">
           <p className="sms-kicker">School Management</p>
-          <h1>Student Records</h1>
-          <p>View, add, edit, and delete student details from your backend.</p>
+          <h1>Teacher Records</h1>
+          <p>View, add, edit, and delete teacher details from your backend.</p>
         </header>
 
         <ManagementNav />
@@ -187,54 +167,28 @@ export default function Home() {
         {error ? <div className="sms-alert">{error}</div> : null}
 
         <section className="sms-card">
-          <h2>{editingId === null ? "Add Student" : "Edit Student"}</h2>
+          <h2>{editingId === null ? "Add Teacher" : "Edit Teacher"}</h2>
 
-          <form className="sms-form" onSubmit={handleSubmit}>
+          <form className="sms-form sms-form-2" onSubmit={handleSubmit}>
             <label>
               Name
               <input
                 name="name"
                 value={form.name}
                 onChange={handleInputChange}
-                placeholder="Student name"
+                placeholder="Teacher name"
                 required
               />
             </label>
 
             <label>
-              Age
+              Subject
               <input
-                name="age"
-                type="number"
-                min={1}
-                value={form.age}
+                name="subject"
+                value={form.subject}
                 onChange={handleInputChange}
-                placeholder="Age"
+                placeholder="Subject taught"
                 required
-              />
-            </label>
-
-            <label>
-              Class ID
-              <input
-                name="class_id"
-                type="number"
-                min={1}
-                value={form.class_id}
-                onChange={handleInputChange}
-                placeholder="Optional"
-              />
-            </label>
-
-            <label>
-              Section ID
-              <input
-                name="section_id"
-                type="number"
-                min={1}
-                value={form.section_id}
-                onChange={handleInputChange}
-                placeholder="Optional"
               />
             </label>
 
@@ -243,8 +197,8 @@ export default function Home() {
                 {submitting
                   ? "Saving..."
                   : editingId === null
-                    ? "Create Student"
-                    : "Update Student"}
+                    ? "Create Teacher"
+                    : "Update Teacher"}
               </button>
 
               {editingId !== null ? (
@@ -258,16 +212,16 @@ export default function Home() {
 
         <section className="sms-card">
           <div className="sms-list-header">
-            <h2>All Students</h2>
-            <button type="button" className="ghost" onClick={() => void fetchStudents()}>
+            <h2>All Teachers</h2>
+            <button type="button" className="ghost" onClick={() => void fetchTeachers()}>
               Refresh
             </button>
           </div>
 
           {loading ? (
-            <p>Loading students...</p>
-          ) : students.length === 0 ? (
-            <p>No students found.</p>
+            <p>Loading teachers...</p>
+          ) : teachers.length === 0 ? (
+            <p>No teachers found.</p>
           ) : (
             <div className="sms-table-wrap">
               <table>
@@ -275,32 +229,28 @@ export default function Home() {
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Age</th>
-                    <th>Class</th>
-                    <th>Section</th>
+                    <th>Subject</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map((student) => (
-                    <tr key={student.id}>
-                      <td>{student.id}</td>
-                      <td>{student.name}</td>
-                      <td>{student.age}</td>
-                      <td>{student.class_id ?? "-"}</td>
-                      <td>{student.section_id ?? "-"}</td>
+                  {teachers.map((teacher) => (
+                    <tr key={teacher.id}>
+                      <td>{teacher.id}</td>
+                      <td>{teacher.name}</td>
+                      <td>{teacher.subject}</td>
                       <td className="row-actions">
                         <button
                           type="button"
                           className="ghost"
-                          onClick={() => handleEdit(student)}
+                          onClick={() => handleEdit(teacher)}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           className="danger"
-                          onClick={() => void handleDelete(student.id)}
+                          onClick={() => void handleDelete(teacher.id)}
                         >
                           Delete
                         </button>

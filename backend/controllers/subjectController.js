@@ -26,6 +26,25 @@ exports.getSubjects = (req, res) => {
   });
 };
 
+exports.updateSubject = (req, res) => {
+  const id = req.params.id;
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: "name is required" });
+  }
+
+  const query = "UPDATE subjects SET name = ? WHERE id = ?";
+
+  db.query(query, [name, id], (err, result) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+
+    res.json({ message: "Subject updated successfully" });
+  });
+};
+
 exports.deleteSubject = (req, res) => {
   const id = req.params.id;
 

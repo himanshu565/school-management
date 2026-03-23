@@ -30,6 +30,25 @@ exports.getTeachers = (req, res) => {
   });
 };
 
+exports.updateTeacher = (req, res) => {
+  const id = req.params.id;
+  const { name, subject } = req.body;
+
+  if (!name || !subject) {
+    return res.status(400).json({ message: "name and subject are required" });
+  }
+
+  const query = "UPDATE teachers SET name = ?, subject = ? WHERE id = ?";
+
+  db.query(query, [name, subject, id], (err, result) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+
+    res.json({ message: "Teacher updated successfully" });
+  });
+};
+
 exports.deleteTeacher = (req, res) => {
   const id = req.params.id;
 

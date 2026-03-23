@@ -1,63 +1,53 @@
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/subjects";
 import { useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { ManagementNav } from "../components/management-nav";
 
-type Student = {
+type Subject = {
   id: number;
   name: string;
-  age: number;
-  class_id: number | null;
-  section_id: number | null;
 };
 
-type StudentForm = {
+type SubjectForm = {
   name: string;
-  age: string;
-  class_id: string;
-  section_id: string;
 };
 
-const emptyForm: StudentForm = {
+const emptyForm: SubjectForm = {
   name: "",
-  age: "",
-  class_id: "",
-  section_id: "",
 };
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Student Dashboard" },
-    { name: "description", content: "Manage student records" },
+    { title: "Subject Dashboard" },
+    { name: "description", content: "Manage subject records" },
   ];
 }
 
-export default function Home() {
+export default function SubjectsPage() {
   const apiBaseUrl = useMemo(
     () => import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000",
     [],
   );
 
-  const [students, setStudents] = useState<Student[]>([]);
-  const [form, setForm] = useState<StudentForm>(emptyForm);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [form, setForm] = useState<SubjectForm>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStudents = async () => {
+  const fetchSubjects = async () => {
     try {
       setError(null);
       setLoading(true);
 
-      const response = await fetch(`${apiBaseUrl}/students`);
-
+      const response = await fetch(`${apiBaseUrl}/subjects`);
       if (!response.ok) {
-        throw new Error("Could not load students");
+        throw new Error("Could not load subjects");
       }
 
-      const data = (await response.json()) as Student[];
-      setStudents(data);
+      const data = (await response.json()) as Subject[];
+      setSubjects(data);
     } catch (fetchError) {
       const message =
         fetchError instanceof Error ? fetchError.message : "Unknown error";
@@ -68,7 +58,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    void fetchStudents();
+    void fetchSubjects();
   }, []);
 
   const resetForm = () => {
@@ -81,19 +71,11 @@ export default function Home() {
     setForm((previous) => ({ ...previous, [name]: value }));
   };
 
-  const toNumberOrNull = (value: string): number | null => {
-    if (value.trim() === "") {
-      return null;
-    }
-
-    return Number(value);
-  };
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!form.name.trim() || !form.age.trim()) {
-      setError("Name and age are required.");
+    if (!form.name.trim()) {
+      setError("Name is required.");
       return;
     }
 
@@ -103,15 +85,12 @@ export default function Home() {
 
       const payload = {
         name: form.name.trim(),
-        age: Number(form.age),
-        class_id: toNumberOrNull(form.class_id),
-        section_id: toNumberOrNull(form.section_id),
       };
 
       const endpoint =
         editingId === null
-          ? `${apiBaseUrl}/students`
-          : `${apiBaseUrl}/students/${editingId}`;
+          ? `${apiBaseUrl}/subjects`
+          : `${apiBaseUrl}/subjects/${editingId}`;
 
       const method = editingId === null ? "POST" : "PUT";
 
@@ -124,11 +103,11 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error("Could not save student");
+        throw new Error("Could not save subject");
       }
 
       resetForm();
-      await fetchStudents();
+      await fetchSubjects();
     } catch (submitError) {
       const message =
         submitError instanceof Error ? submitError.message : "Unknown error";
@@ -138,14 +117,10 @@ export default function Home() {
     }
   };
 
-  const handleEdit = (student: Student) => {
-    setEditingId(student.id);
+  const handleEdit = (subject: Subject) => {
+    setEditingId(subject.id);
     setForm({
-      name: student.name,
-      age: String(student.age),
-      class_id: student.class_id === null ? "" : String(student.class_id),
-      section_id:
-        student.section_id === null ? "" : String(student.section_id),
+      name: subject.name,
     });
   };
 
@@ -153,19 +128,19 @@ export default function Home() {
     try {
       setError(null);
 
-      const response = await fetch(`${apiBaseUrl}/students/${id}`, {
+      const response = await fetch(`${apiBaseUrl}/subjects/${id}`, {
         method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error("Could not delete student");
+        throw new Error("Could not delete subject");
       }
 
       if (editingId === id) {
         resetForm();
       }
 
-      await fetchStudents();
+      await fetchSubjects();
     } catch (deleteError) {
       const message =
         deleteError instanceof Error ? deleteError.message : "Unknown error";
@@ -178,8 +153,8 @@ export default function Home() {
       <section className="sms-shell">
         <header className="sms-header">
           <p className="sms-kicker">School Management</p>
-          <h1>Student Records</h1>
-          <p>View, add, edit, and delete student details from your backend.</p>
+          <h1>Subject Records</h1>
+          <p>View, add, edit, and delete subject details from your backend.</p>
         </header>
 
         <ManagementNav />
@@ -187,54 +162,17 @@ export default function Home() {
         {error ? <div className="sms-alert">{error}</div> : null}
 
         <section className="sms-card">
-          <h2>{editingId === null ? "Add Student" : "Edit Student"}</h2>
+          <h2>{editingId === null ? "Add Subject" : "Edit Subject"}</h2>
 
-          <form className="sms-form" onSubmit={handleSubmit}>
+          <form className="sms-form sms-form-1" onSubmit={handleSubmit}>
             <label>
               Name
               <input
                 name="name"
                 value={form.name}
                 onChange={handleInputChange}
-                placeholder="Student name"
+                placeholder="Subject name"
                 required
-              />
-            </label>
-
-            <label>
-              Age
-              <input
-                name="age"
-                type="number"
-                min={1}
-                value={form.age}
-                onChange={handleInputChange}
-                placeholder="Age"
-                required
-              />
-            </label>
-
-            <label>
-              Class ID
-              <input
-                name="class_id"
-                type="number"
-                min={1}
-                value={form.class_id}
-                onChange={handleInputChange}
-                placeholder="Optional"
-              />
-            </label>
-
-            <label>
-              Section ID
-              <input
-                name="section_id"
-                type="number"
-                min={1}
-                value={form.section_id}
-                onChange={handleInputChange}
-                placeholder="Optional"
               />
             </label>
 
@@ -243,8 +181,8 @@ export default function Home() {
                 {submitting
                   ? "Saving..."
                   : editingId === null
-                    ? "Create Student"
-                    : "Update Student"}
+                    ? "Create Subject"
+                    : "Update Subject"}
               </button>
 
               {editingId !== null ? (
@@ -258,16 +196,16 @@ export default function Home() {
 
         <section className="sms-card">
           <div className="sms-list-header">
-            <h2>All Students</h2>
-            <button type="button" className="ghost" onClick={() => void fetchStudents()}>
+            <h2>All Subjects</h2>
+            <button type="button" className="ghost" onClick={() => void fetchSubjects()}>
               Refresh
             </button>
           </div>
 
           {loading ? (
-            <p>Loading students...</p>
-          ) : students.length === 0 ? (
-            <p>No students found.</p>
+            <p>Loading subjects...</p>
+          ) : subjects.length === 0 ? (
+            <p>No subjects found.</p>
           ) : (
             <div className="sms-table-wrap">
               <table>
@@ -275,32 +213,26 @@ export default function Home() {
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Age</th>
-                    <th>Class</th>
-                    <th>Section</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map((student) => (
-                    <tr key={student.id}>
-                      <td>{student.id}</td>
-                      <td>{student.name}</td>
-                      <td>{student.age}</td>
-                      <td>{student.class_id ?? "-"}</td>
-                      <td>{student.section_id ?? "-"}</td>
+                  {subjects.map((subject) => (
+                    <tr key={subject.id}>
+                      <td>{subject.id}</td>
+                      <td>{subject.name}</td>
                       <td className="row-actions">
                         <button
                           type="button"
                           className="ghost"
-                          onClick={() => handleEdit(student)}
+                          onClick={() => handleEdit(subject)}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           className="danger"
-                          onClick={() => void handleDelete(student.id)}
+                          onClick={() => void handleDelete(subject.id)}
                         >
                           Delete
                         </button>

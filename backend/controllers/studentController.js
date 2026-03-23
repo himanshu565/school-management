@@ -29,6 +29,25 @@ exports.getStudents = (req, res) => {
   });
 };
 
+exports.updateStudent = (req, res) => {
+  const id = req.params.id;
+  const { name, age, class_id, section_id } = req.body;
+
+  const query = `UPDATE students
+                 SET name = ?, age = ?, class_id = ?, section_id = ?
+                 WHERE id = ?`;
+
+  db.query(query, [name, age, class_id, section_id, id], (err, result) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+
+    res.json({
+      message: "Student updated successfully",
+    });
+  });
+};
+
 exports.deleteStudent = (req, res) => {
   const id = req.params.id;
 

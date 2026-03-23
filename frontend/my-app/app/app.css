@@ -1,15 +1,246 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: "Sora", "Segoe UI", sans-serif;
 }
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply m-0;
+  font-family: var(--font-sans);
+  color: #101828;
+  background:
+    radial-gradient(circle at 10% 20%, #fef3c7 0%, transparent 40%),
+    radial-gradient(circle at 80% 10%, #dcfce7 0%, transparent 36%),
+    linear-gradient(145deg, #fff8f3 0%, #f8fafc 100%);
+  min-height: 100dvh;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+* {
+  box-sizing: border-box;
+}
+
+.sms-page {
+  min-height: 100dvh;
+  padding: 2.5rem 1rem;
+}
+
+.sms-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.sms-header {
+  background: linear-gradient(120deg, #1d4ed8 0%, #0369a1 62%, #0f766e 100%);
+  color: #f8fafc;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 24px 40px -30px #0f172a;
+  animation: slide-in 420ms ease-out;
+}
+
+.sms-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #dbeafe;
+}
+
+.sms-header h1 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  font-weight: 700;
+}
+
+.sms-header p {
+  margin: 0.5rem 0 0;
+}
+
+.sms-alert {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 0.75rem;
+  padding: 0.8rem 1rem;
+}
+
+.sms-nav {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.sms-nav-link {
+  text-decoration: none;
+  color: #0f172a;
+  background: rgba(226, 232, 240, 0.75);
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 0.45rem 0.9rem;
+  font-weight: 700;
+}
+
+.sms-nav-link.is-active {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #0f172a;
+}
+
+.sms-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.1rem;
+  box-shadow: 0 10px 30px -24px #475569;
+  animation: fade-up 460ms ease-out;
+}
+
+.sms-card h2 {
+  margin: 0 0 1rem;
+}
+
+.sms-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.sms-form-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sms-form-1 {
+  grid-template-columns: 1fr;
+}
+
+.sms-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.sms-form input {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  background: #ffffff;
+}
+
+.sms-form input:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 1px;
+}
+
+.sms-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.65rem;
+}
+
+button {
+  border: 0;
+  border-radius: 0.65rem;
+  padding: 0.62rem 0.9rem;
+  font: inherit;
+  font-weight: 700;
+  background: #0f172a;
+  color: #f8fafc;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button.ghost {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+button.danger {
+  background: #dc2626;
+}
+
+.sms-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sms-table-wrap {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .sms-page {
+    padding: 1.1rem 0.7rem 1.5rem;
+  }
+
+  .sms-form {
+    grid-template-columns: 1fr;
+  }
+
+  .row-actions {
+    flex-direction: column;
   }
 }
