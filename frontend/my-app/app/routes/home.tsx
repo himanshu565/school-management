@@ -144,8 +144,7 @@ export default function Home() {
       name: student.name,
       age: String(student.age),
       class_id: student.class_id === null ? "" : String(student.class_id),
-      section_id:
-        student.section_id === null ? "" : String(student.section_id),
+      section_id: student.section_id === null ? "" : String(student.section_id),
     });
   };
 
@@ -259,7 +258,11 @@ export default function Home() {
         <section className="sms-card">
           <div className="sms-list-header">
             <h2>All Students</h2>
-            <button type="button" className="ghost" onClick={() => void fetchStudents()}>
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => void fetchStudents()}
+            >
               Refresh
             </button>
           </div>

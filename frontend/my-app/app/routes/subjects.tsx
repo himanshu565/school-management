@@ -197,7 +197,11 @@ export default function SubjectsPage() {
         <section className="sms-card">
           <div className="sms-list-header">
             <h2>All Subjects</h2>
-            <button type="button" className="ghost" onClick={() => void fetchSubjects()}>
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => void fetchSubjects()}
+            >
               Refresh
             </button>
           </div>

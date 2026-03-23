@@ -213,7 +213,11 @@ export default function TeachersPage() {
         <section className="sms-card">
           <div className="sms-list-header">
             <h2>All Teachers</h2>
-            <button type="button" className="ghost" onClick={() => void fetchTeachers()}>
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => void fetchTeachers()}
+            >
               Refresh
             </button>
           </div>
