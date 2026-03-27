@@ -3,7 +3,7 @@ const db = require("../config/db");
 exports.addSubject = (req, res) => {
   const { name } = req.body;
 
-  const query = "INSERT INTO subjects (name) VALUES (?)";
+  const query = "INSERT INTO subjects (subject_name) VALUES (?)";
 
   db.query(query, [name], (err, result) => {
     if (err) {
@@ -15,7 +15,7 @@ exports.addSubject = (req, res) => {
 };
 
 exports.getSubjects = (req, res) => {
-  const query = "SELECT * FROM subjects";
+  const query = "SELECT id, subject_name as name FROM subjects";
 
   db.query(query, (err, result) => {
     if (err) {
@@ -34,7 +34,7 @@ exports.updateSubject = (req, res) => {
     return res.status(400).json({ message: "name is required" });
   }
 
-  const query = "UPDATE subjects SET name = ? WHERE id = ?";
+  const query = "UPDATE subjects SET subject_name = ? WHERE id = ?";
 
   db.query(query, [name, id], (err, result) => {
     if (err) {
