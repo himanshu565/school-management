@@ -209,6 +209,7 @@ th {
   gap: 0.5rem;
 }
 
+ [theme]
 @keyframes slide-in {
   from {
     opacity: 0;
